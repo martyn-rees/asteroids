@@ -13,6 +13,7 @@ keysDown['right']=false;
 let screen = {width: 800, height: 400};
 
 let rocks = [];
+let ship;
 
 function createRockNode (rocks) {
   let gameHTML = '';
@@ -34,6 +35,10 @@ function initRocks(count) {
   }
 }
 
+function initShip() {
+ ship = new Ship(100,50, "ship")
+}
+
 function resizeGameScreenSize() {
   let gameScreen = document.getElementById("gameScreen")
   screen.width = gameScreen.offsetWidth;
@@ -48,6 +53,9 @@ function step(timestamp) {
     rocks[i].update(screen.width, screen.height);
     rocks[i].render();
   }
+  ship.updateState(keysDown)
+  ship.update(screen.width, screen.height);
+  ship.render()
   globalID = window.requestAnimationFrame(step);
 }
 
@@ -82,19 +90,19 @@ function addEvents() {
     keyEvent(ev, false);
   });
 
-
   document.getElementById("start").addEventListener("click", function(){
-      globalID = requestAnimationFrame(step);
+    globalID = requestAnimationFrame(step);
   });
 
   document.getElementById("stop").addEventListener("click", function(){
-      cancelAnimationFrame(globalID);
+    cancelAnimationFrame(globalID);
   });
 }
 
 
 resizeGameScreenSize();
 initRocks(30);
+initShip();
 createRockNode(rocks);
 addEvents();
 

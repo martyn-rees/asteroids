@@ -4,6 +4,7 @@ export const asteroidSVG = (rock) => `
   </svg>`
 
 export const shipSVG = () => `
-<svg id="ship" class="" width="13px" height="12px" viewBox="0 0 13 12" version="1.1">
+<svg id="ship" class="ship" width="13px" height="12px" viewBox="0 0 13 12" version="1.1">
+	<circle cx="0" cy="0" r="12" stroke="black" stroke-width="1" fill="blue" />
 </svg>
 `

@@ -14,13 +14,16 @@ export default class Ship {
 		this.shipThrust = false
 		this.id = id;
 		this.r = 32;
-
-		let radians = Math.random() * Math.PI * 2;
-		this.dx = speed * Math.sin(radians)
-		this.dy = speed * Math.cos(radians)
 	}
 
-update (){
+updateState(keysDown) {
+	this.shipThrust = false;
+	if (keysDown['up']==true){ this.shipThrust = true; }
+	if (keysDown['left']==true){ this.changeShipRotation( -0.25 ); }
+	if (keysDown['right']==true){ this.changeShipRotation( 0.25 ); }
+}
+
+update (SCREEN_WIDTH, SCREEN_HEIGHT){
 	//shipAngle = shipRotation * 15.0 * 0.01745;
 	// calculate x,y components of speed, thrust and friction
 	let currentSpeedX = this.shipSpeed * Math.sin(this.directionAngle);
@@ -56,7 +59,7 @@ update (){
 
 	if ( dy < 0) {
 		// Add PI radians or 180 degrees
-		directionAngle = directionAngle + 3.1415;
+		this.directionAngle = this.directionAngle + 3.1415;
 	}
 
 
