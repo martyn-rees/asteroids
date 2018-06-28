@@ -1,8 +1,14 @@
 //import _ from 'lodash';
 import Rock from './modules/rock.js';
+import Ship from './modules/ship.js';
 import {asteroidSVG, shipSVG} from './graphics.js';
 
 var globalID
+var keysDown = [];
+keysDown['up']=false;
+keysDown['down']=false;
+keysDown['left']=false;
+keysDown['right']=false;
 
 let screen = {width: 800, height: 400};
 
@@ -35,9 +41,7 @@ function resizeGameScreenSize() {
   console.log(screen)
 }
 
-resizeGameScreenSize();
-initRocks(30);
-createRockNode(rocks);
+
 
 function step(timestamp) {
   for (let i=0; i<rocks.length; i++) {
@@ -47,19 +51,52 @@ function step(timestamp) {
   globalID = window.requestAnimationFrame(step);
 }
 
-window.addEventListener('resize', function(event){
-  resizeGameScreenSize();
-});
+function getKeyCode(ev){
+  if (ev == null) {
+    return window.ev.keyCode;
+  } else {
+    return ev.keyCode;
+  }
+}
 
-document.getElementById("start").addEventListener("click", function(){
-    globalID = requestAnimationFrame(step);
-});
+function keyEvent(ev, isKeyDown){
+  var keyCode = getKeyCode(ev);
+  if (keyCode == 37){ keysDown['left']=isKeyDown; }
+  if (keyCode == 39){ keysDown['right']=isKeyDown; }
+  if (keyCode == 38){ keysDown['up']=isKeyDown; }
+  if (keyCode == 40){ keysDown['down']=isKeyDown; }
+  console.log(keysDown)
+}
 
-document.getElementById("stop").addEventListener("click", function(){
-    cancelAnimationFrame(globalID);
-});
+
+function addEvents() {
+  window.addEventListener('resize', function(event){
+    resizeGameScreenSize();
+  });
+
+  window.addEventListener('keydown', function(ev){
+    keyEvent(ev, true);
+  });
+
+  window.addEventListener('keyup', function(ev){
+    keyEvent(ev, false);
+  });
 
 
+  document.getElementById("start").addEventListener("click", function(){
+      globalID = requestAnimationFrame(step);
+  });
+
+  document.getElementById("stop").addEventListener("click", function(){
+      cancelAnimationFrame(globalID);
+  });
+}
+
+
+resizeGameScreenSize();
+initRocks(30);
+createRockNode(rocks);
+addEvents();
 
 
 
