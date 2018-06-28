@@ -36,7 +36,7 @@ function resizeGameScreenSize() {
 }
 
 resizeGameScreenSize();
-initRocks(20);
+initRocks(30);
 createRockNode(rocks);
 
 function step(timestamp) {
