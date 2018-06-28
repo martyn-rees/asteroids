@@ -28,7 +28,15 @@ function initRocks(count) {
   }
 }
 
-initRocks(100);
+function resizeGameScreenSize() {
+  let gameScreen = document.getElementById("gameScreen")
+  screen.width = gameScreen.offsetWidth;
+  screen.height = gameScreen.offsetHeight;
+  console.log(screen)
+}
+
+resizeGameScreenSize();
+initRocks(20);
 createRockNode(rocks);
 
 function step(timestamp) {
@@ -38,6 +46,10 @@ function step(timestamp) {
   }
   globalID = window.requestAnimationFrame(step);
 }
+
+window.addEventListener('resize', function(event){
+  resizeGameScreenSize();
+});
 
 document.getElementById("start").addEventListener("click", function(){
     globalID = requestAnimationFrame(step);

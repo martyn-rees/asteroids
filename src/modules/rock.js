@@ -12,10 +12,22 @@ export default class Rock {
 	}
 
 	update(SCREEN_X, SCREEN_Y) {
+    if (this.x - this.r < 0) {
+    	this.dx = Math.abs(this.dx)
+    } else if (this.x + this.r > SCREEN_X) {
+    	this.dx = -Math.abs(this.dx)
+    }
+    if (this.y - this.r < 0) {
+    	this.dy = Math.abs(this.dy)
+    } else if (this.y + this.r > SCREEN_Y) {
+    	this.dy = -Math.abs(this.dy)
+    }
     let newX = this.x + this.dx
     let newY = this.y + this.dy
-    this.x = constrainNumber(newX, 0, SCREEN_X)
-    this.y = constrainNumber(newY, 0, SCREEN_Y)
+    this.x = newX
+    this.y=newY
+    //this.x = constrainNumber(newX, 0, SCREEN_X)
+    //this.y = constrainNumber(newY, 0, SCREEN_Y)
 	}
 
 	render() {
