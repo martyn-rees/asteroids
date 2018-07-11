@@ -13,14 +13,16 @@ export default class Ship {
 		this.shipRotation = 0
 		this.shipThrust = false
 		this.id = id;
-		this.r = 32;
+		this.r = 16;
+		this.dr = Math.PI / 90
+		this.FULLRADIAN = 2 * Math.PI
 	}
 
 updateState(keysDown) {
 	this.shipThrust = false;
-	if (keysDown['up']==true){ this.shipThrust = true; }
-	if (keysDown['left']==true){ this.changeShipRotation( -0.25 ); }
-	if (keysDown['right']==true){ this.changeShipRotation( 0.25 ); }
+	if (keysDown.up==true){ this.shipThrust = true; }
+	if (keysDown.left==true){ this.changeShipRotation( -this.dr ); }
+	if (keysDown.right==true){ this.changeShipRotation( this.dr ); }
 }
 
 update (SCREEN_WIDTH, SCREEN_HEIGHT){
@@ -88,26 +90,36 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
   
 }
 
-	// dRot is 0.25 or -0.25
-	changeShipRotation( dRot ){
-		this.shipRotation += dRot;
-		if ( this.shipRotation < 0) {
-			this.shipRotation = 23;
-		} else if ( this.shipRotation > 23 ){
-			this.shipRotation = 0;
-		}
-		this.shipAngle = this.shipRotation * 15.0 * 0.01745;
-	}
+  // dRot is 0.25 or -0.25
+  changeShipRotation( dRot ){
+    //console.log('Math.PI / 2');
+    this.shipRotation += dRot;
+    if ( this.shipRotation < 0) {
+      this.shipRotation = this.FULLRADIAN
+    } else if ( this.shipRotation > this.FULLRADIAN ){
+      this.shipRotation = 0;
+    }
+    //this.shipRotation = Math.PI / 2
+    this.shipAngle = this.shipRotation;
+  }
 
-	// val is 0 or 1
-	setShipThrust(val){
-		shipThrust = val;
-	}
+  // val is 0 or 1
+  setShipThrust(val){
+    shipThrust = val;
+  }
 
-	render() {
-		let shipNode = document.getElementById(this.id);
-		shipNode.style.left = this.x + 'px';
-		shipNode.style.top = this.y + 'px';
-		shipNode.style.transform = `rotate(7deg)`;
-	}
+  render() {
+    //console.log(this)
+    let degrees = this.shipAngle * 180 / Math.PI
+    let shipNode = document.getElementById(this.id);
+    let thrustNode = document.getElementById("thrust");
+    if (this.shipThrust) {
+      thrustNode.style.display = 'block';
+    } else {
+      thrustNode.style.display = 'none';
+    }
+    shipNode.style.left = this.x + 'px';
+    shipNode.style.top = this.y + 'px';
+    shipNode.style.transform = `rotate(${degrees}deg)`;
+  }
 }

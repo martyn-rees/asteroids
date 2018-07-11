@@ -2,13 +2,16 @@
 import Rock from './modules/rock.js';
 import Ship from './modules/ship.js';
 import {asteroidSVG, shipSVG} from './graphics.js';
+import {doCirclesCollide} from './helper.js';
 
 var globalID
-var keysDown = [];
-keysDown['up']=false;
-keysDown['down']=false;
-keysDown['left']=false;
-keysDown['right']=false;
+let isGamePlaying = false;
+var keysDown = {
+  up: false,
+  down: false,
+  left: false,
+  right: false
+}
 
 let screen = {width: 800, height: 400};
 
@@ -36,44 +39,48 @@ function initRocks(count) {
 }
 
 function initShip() {
- ship = new Ship(100,50, "ship")
+ ship = new Ship(screen.width/2, screen.height/2, "ship")
 }
 
 function resizeGameScreenSize() {
   let gameScreen = document.getElementById("gameScreen")
   screen.width = gameScreen.offsetWidth;
   screen.height = gameScreen.offsetHeight;
-  console.log(screen)
 }
 
 
-
 function step(timestamp) {
-  for (let i=0; i<rocks.length; i++) {
-    rocks[i].update(screen.width, screen.height);
-    rocks[i].render();
-  }
+  gameLoop()
+}
+
+function gameLoop() {
+  //let currentKeys = { }//...keysDown}
+  //console.log(keysDown, currentKeys)
+
   ship.updateState(keysDown)
   ship.update(screen.width, screen.height);
+
+  for (let i=0; i<rocks.length; i++) {
+    rocks[i].update(screen.width, screen.height);
+    if (doCirclesCollide(rocks[i], ship)) {
+      console.log('boom: ', i)
+      rocks[i].r = 10
+    }
+
+    rocks[i].render();
+  }
+
   ship.render()
   globalID = window.requestAnimationFrame(step);
 }
 
-function getKeyCode(ev){
-  if (ev == null) {
-    return window.ev.keyCode;
-  } else {
-    return ev.keyCode;
-  }
-}
-
 function keyEvent(ev, isKeyDown){
-  var keyCode = getKeyCode(ev);
-  if (keyCode == 37){ keysDown['left']=isKeyDown; }
-  if (keyCode == 39){ keysDown['right']=isKeyDown; }
-  if (keyCode == 38){ keysDown['up']=isKeyDown; }
-  if (keyCode == 40){ keysDown['down']=isKeyDown; }
-  console.log(keysDown)
+  var keyCode = ev == null ? window.ev.keyCode : ev.keyCode
+
+  if (keyCode == 37){ keysDown.left=isKeyDown; }
+  if (keyCode == 39){ keysDown.right=isKeyDown; }
+  if (keyCode == 38){ keysDown.up=isKeyDown; }
+  if (keyCode == 40){ keysDown.down=isKeyDown; }
 }
 
 
@@ -91,22 +98,22 @@ function addEvents() {
   });
 
   document.getElementById("start").addEventListener("click", function(){
+    cancelAnimationFrame(globalID);
     globalID = requestAnimationFrame(step);
   });
 
   document.getElementById("stop").addEventListener("click", function(){
+    isGamePlaying = false;
     cancelAnimationFrame(globalID);
   });
 }
 
+function init() {
+  resizeGameScreenSize();
+  initRocks(30);
+  initShip();
+  createRockNode(rocks);
+  addEvents();
+}
 
-resizeGameScreenSize();
-initRocks(30);
-initShip();
-createRockNode(rocks);
-addEvents();
-
-
-
-
-
+init()

@@ -16,5 +16,5 @@ export const distanceBetweenPoints = (p1, p2) => {
 
 export const doCirclesCollide = (c1, c2) => {
   let minDistance = c1.r + c2.r
-  return distanceBetweenCircles(c1, c2) < minDistance ? true : false
+  return distanceBetweenPoints(c1, c2) < minDistance ? true : false
 }
