@@ -2,6 +2,8 @@ import {constrainNumber} from '../helper.js';
 
 export default class Rock {
 	constructor(x,y,r,speed,id) {
+    this.rotation = 0;
+    this.dr = (2* Math.random()) - 1
 		this.id = id;
 		this.x = x;
 		this.y = y;
@@ -30,9 +32,17 @@ export default class Rock {
     //this.y = constrainNumber(newY, 0, SCREEN_Y)
 	}
 
+  remove() {
+    this.dx = 0
+    this.dy = 0
+    this.x = 0
+    this.y = 0
+  }
+
 	render() {
 		let rockNode = document.getElementById(this.id);
 		rockNode.style.left = this.x + 'px';
 		rockNode.style.top = this.y + 'px';
+    rockNode.style.transform = `rotate(${this.rotation}deg)`;
 	}
 }

@@ -1,7 +1,8 @@
 //import _ from 'lodash';
 import Rock from './modules/rock.js';
 import Ship from './modules/ship.js';
-import {asteroidSVG, shipSVG} from './graphics.js';
+import Bullet from './modules/bullet.js';
+import {asteroidSVG, shipSVG, bulletSVG} from './graphics.js';
 import {doCirclesCollide} from './helper.js';
 
 var globalID
@@ -17,12 +18,28 @@ let screen = {width: 800, height: 400};
 
 let rocks = [];
 let ship;
+let bullets = {
+  MIN_RELOD_TIME: 10,
+  countdownToReload: 0,
+  bulletList: {},
+  bulletCount: 0
+}
 
 function createRockNode (rocks) {
   let gameHTML = '';
+
   for (let i=0; i<rocks.length; i++){
     gameHTML += asteroidSVG(rocks[i])
   }
+
+
+
+
+
+
+
+
+
   gameHTML += shipSVG()
   var gameScreen = document.getElementById("gameScreen"); 
   gameScreen.innerHTML = gameHTML;
@@ -48,30 +65,78 @@ function resizeGameScreenSize() {
   screen.height = gameScreen.offsetHeight;
 }
 
+function createBulletNode (newBullet) {
+  let gameScreen = document.getElementById("gameScreen");
+  //let bulletHTML = bulletSVG(newBullet)
+  let bulletNode = document.createElement('div');
+  bulletNode.setAttribute("id", newBullet.id);
+  bulletNode.setAttribute("class", "bullet");
+  gameScreen.appendChild(bulletNode);
+}
+
+function removeBulletNode (newBullet) {
+  let bulletNode = document.getElementById(newBullet.id);
+  bulletNode.parentNode.removeChild(bulletNode);
+}
 
 function step(timestamp) {
   gameLoop()
 }
 
 function gameLoop() {
-  //let currentKeys = { }//...keysDown}
-  //console.log(keysDown, currentKeys)
-
-  ship.updateState(keysDown)
+  // test controls for ship
+  ship.updateState(keysDown.up, keysDown.left, keysDown.right)
+  // update ship position
   ship.update(screen.width, screen.height);
+
+  // test if bullet fired
+  if (bullets.countdownToReload > 0) {
+    bullets.countdownToReload--
+  } else {
+    // test if SHOOT KEY is pressed
+    if (keysDown.down == true) {
+      // create new bullet
+      bullets.bulletCount++
+      let bulletId = 'bullet'+ bullets.bulletCount
+      bullets.bulletList[bulletId] = new Bullet(bulletId, ship.x, ship.y, ship.shipRotation, 0, 0, 12)
+      createBulletNode(bullets.bulletList[bulletId])
+      // reset time to fire next bullet
+      bullets.countdownToReload = bullets.MIN_RELOD_TIME
+    }
+  }
+
+  // remove dead bullets
+  for (var bullet in bullets.bulletList) {
+    if (bullets.bulletList[bullet].isDead) {
+      // remove bullet from screen
+      removeBulletNode(bullets.bulletList[bullet])
+      // remove bullet from list
+      delete bullets.bulletList[bullet]
+    }
+  }
 
   for (let i=0; i<rocks.length; i++) {
     rocks[i].update(screen.width, screen.height);
     if (doCirclesCollide(rocks[i], ship)) {
-      console.log('boom: ', i)
-      rocks[i].r = 10
+      rocks[i].remove()
     }
-
-    rocks[i].render();
   }
 
-  ship.render()
+  renderScreen()
   globalID = window.requestAnimationFrame(step);
+}
+
+function renderScreen() {
+  var gameScreen = document.getElementById("gameScreen"); 
+  ship.render()
+  for (let i = 0; i < rocks.length; i++) {
+    rocks[i].render();
+  }
+  for (var bullet in bullets.bulletList) {
+    bullets.bulletList[bullet].update(screen.width, screen.height);
+    bullets.bulletList[bullet].render()
+  }
+
 }
 
 function keyEvent(ev, isKeyDown){
@@ -80,9 +145,31 @@ function keyEvent(ev, isKeyDown){
   if (keyCode == 37){ keysDown.left=isKeyDown; }
   if (keyCode == 39){ keysDown.right=isKeyDown; }
   if (keyCode == 38){ keysDown.up=isKeyDown; }
-  if (keyCode == 40){ keysDown.down=isKeyDown; }
+  if (keyCode == 83){ keysDown.down=isKeyDown; }
+
+
+
+
+
+
+
+
+
+
+
 }
 
+function startGame() {
+  resizeGameScreenSize()
+  initShip()
+  startLevel(1)
+  addEvents()
+}
+
+function startLevel(level) {
+  initRocks(30)
+  createRockNode(rocks)
+}
 
 function addEvents() {
   window.addEventListener('resize', function(event){
@@ -109,11 +196,7 @@ function addEvents() {
 }
 
 function init() {
-  resizeGameScreenSize();
-  initRocks(30);
-  initShip();
-  createRockNode(rocks);
-  addEvents();
+  startGame()
 }
 
 init()
