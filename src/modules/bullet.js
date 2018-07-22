@@ -1,4 +1,5 @@
 import {constrainNumber} from '../helper.js'
+import {renderBullet} from '../render.js'
 
 const BULLET_LIFE = 90
 const BULLET_SPEED = 6
@@ -30,8 +31,6 @@ export default class Bullet {
   }
 
   render() {
-    let el = document.getElementById(this.id)
-    el.style.left = this.x + 'px'
-    el.style.top = this.y + 'px'
+    renderBullet(this.id, this.x, this.y)
   }
 }

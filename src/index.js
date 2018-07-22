@@ -7,11 +7,11 @@ import {doCirclesCollide} from './helper.js';
 
 var globalID
 let isGamePlaying = false;
-var keysDown = {
-  up: false,
-  down: false,
-  left: false,
-  right: false
+var ACTIONS = {
+  shipThrust: false,
+  shoot: false,
+  shipLeft: false,
+  shipRight: false
 }
 
 let screen = {width: 800, height: 400};
@@ -27,19 +27,9 @@ let bullets = {
 
 function createRockNode (rocks) {
   let gameHTML = '';
-
   for (let i=0; i<rocks.length; i++){
     gameHTML += asteroidSVG(rocks[i])
   }
-
-
-
-
-
-
-
-
-
   gameHTML += shipSVG()
   var gameScreen = document.getElementById("gameScreen"); 
   gameScreen.innerHTML = gameHTML;
@@ -85,7 +75,7 @@ function step(timestamp) {
 
 function gameLoop() {
   // test controls for ship
-  ship.updateState(keysDown.up, keysDown.left, keysDown.right)
+  ship.updateState(ACTIONS.shipThrust, ACTIONS.shipLeft, ACTIONS.shipRight)
   // update ship position
   ship.update(screen.width, screen.height);
 
@@ -94,7 +84,7 @@ function gameLoop() {
     bullets.countdownToReload--
   } else {
     // test if SHOOT KEY is pressed
-    if (keysDown.down == true) {
+    if (ACTIONS.shoot == true) {
       // create new bullet
       bullets.bulletCount++
       let bulletId = 'bullet'+ bullets.bulletCount
@@ -141,22 +131,10 @@ function renderScreen() {
 
 function keyEvent(ev, isKeyDown){
   var keyCode = ev == null ? window.ev.keyCode : ev.keyCode
-
-  if (keyCode == 37){ keysDown.left=isKeyDown; }
-  if (keyCode == 39){ keysDown.right=isKeyDown; }
-  if (keyCode == 38){ keysDown.up=isKeyDown; }
-  if (keyCode == 83){ keysDown.down=isKeyDown; }
-
-
-
-
-
-
-
-
-
-
-
+  if (keyCode == 37){ ACTIONS.shipLeft=isKeyDown; }
+  if (keyCode == 39){ ACTIONS.shipRight=isKeyDown; }
+  if (keyCode == 38){ ACTIONS.shipThrust=isKeyDown; }
+  if (keyCode == 83){ ACTIONS.shoot=isKeyDown; }
 }
 
 function startGame() {

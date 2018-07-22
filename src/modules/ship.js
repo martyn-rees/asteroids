@@ -1,4 +1,5 @@
 import {constrainNumber} from '../helper.js';
+import {renderShip} from '../render.js'
 
 export default class Ship {
   constructor(x,y,id) {
@@ -18,10 +19,10 @@ export default class Ship {
     this.FULLRADIAN = 2 * Math.PI
   }
 
-updateState(thrust, rotateCounterClockwise, rotateCLockwise) {
+updateState(thrust, rotateCounterClockwise, rotateClockwise) {
   this.shipThrust = thrust ? true : false;
   if (rotateCounterClockwise){ this.changeShipRotation( -this.dr ); }
-  if (rotateCLockwise){ this.changeShipRotation( this.dr ); }
+  if (rotateClockwise){ this.changeShipRotation( this.dr ); }
 }
 
 update (SCREEN_WIDTH, SCREEN_HEIGHT){
@@ -63,7 +64,6 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
     this.directionAngle = this.directionAngle + 3.1415;
   }
 
-
   if ( this.shipSpeed > this.maxSpeed ){
     this.shipSpeed = this.maxSpeed
     dx = this.shipSpeed * Math.sin( this.directionAngle )
@@ -74,7 +74,6 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
   this.y -= dy //(shipSpeed*cos(shipAngle))
 
   //amend x,y values to keep ship on screen
-
   if (this.x < 0) {
     this.x = SCREEN_WIDTH
   }else if ( this.x > SCREEN_WIDTH) {
@@ -89,7 +88,6 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
   
 }
 
-  // dRot is 0.25 or -0.25
   changeShipRotation( dRot ){
     this.shipRotation += dRot
     if ( this.shipRotation < 0) {
@@ -97,26 +95,14 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
     } else if ( this.shipRotation > this.FULLRADIAN ){
       this.shipRotation = 0
     }
-    //this.shipRotation = Math.PI / 2
     this.shipAngle = this.shipRotation
   }
 
-  // val is 0 or 1
-  setShipThrust(val){
-    shipThrust = val
+  setShipThrust(bool){
+    shipThrust = bool
   }
 
   render() {
-    let degrees = this.shipAngle * 180 / Math.PI
-    let shipNode = document.getElementById(this.id)
-    let thrustNode = document.getElementById("thrust")
-    if (this.shipThrust) {
-      thrustNode.style.display = 'block'
-    } else {
-      thrustNode.style.display = 'none'
-    }
-    shipNode.style.left = this.x + 'px'
-    shipNode.style.top = this.y + 'px'
-    shipNode.style.transform = `rotate(${degrees}deg)`
+    renderShip(this.id, this.x, this.y, this.shipAngle, this.shipThrust)
   }
 }
