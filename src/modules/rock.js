@@ -2,9 +2,9 @@ import {constrainNumber} from '../helper.js'
 import {renderRock} from '../render.js'
 
 export default class Rock {
-  constructor(x,y,r,speed,id) {
+  constructor(x, y, r, speed, id) {
     this.rotation = 0;
-    this.dr = (2* Math.random()) - 1
+    this.dr = (2 * Math.random()) - 1
     this.id = id;
     this.x = x;
     this.y = y;
@@ -28,7 +28,8 @@ export default class Rock {
     let newX = this.x + this.dx
     let newY = this.y + this.dy
     this.x = newX
-    this.y=newY
+    this.y = newY
+    this.rotation += this.dr;
     //this.x = constrainNumber(newX, 0, SCREEN_X)
     //this.y = constrainNumber(newY, 0, SCREEN_Y)
   }
