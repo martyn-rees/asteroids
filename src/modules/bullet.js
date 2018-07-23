@@ -9,8 +9,8 @@ export default class Bullet {
     this.id = id
     this.isDead = false
     let bulletAngleRadians = shipRotation
-    this.dx = (BULLET_SPEED * Math.sin(bulletAngleRadians))
-    this.dy = (BULLET_SPEED * Math.cos(bulletAngleRadians))
+    this.dx = shipDx + (BULLET_SPEED * Math.sin(bulletAngleRadians))
+    this.dy = shipDy + (BULLET_SPEED * Math.cos(bulletAngleRadians))
     this.x = shipX + (SHIP_GUN_LENGTH * Math.sin(bulletAngleRadians))
     this.y = shipY - (SHIP_GUN_LENGTH * Math.cos(bulletAngleRadians))
     this.frame = 0
