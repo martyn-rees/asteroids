@@ -2,7 +2,7 @@ import {constrainNumber} from '../helper.js';
 import {renderShip} from '../render.js'
 
 export default class Ship {
-  constructor(x,y,id) {
+  constructor(x, y, id) {
     this.maxSpeed = 4.0
     this.friction = 0.005
     this.thrust = 0.1
@@ -17,6 +17,8 @@ export default class Ship {
     this.r = 6;
     this.dr = Math.PI / 90
     this.FULLRADIAN = 2 * Math.PI
+    this.dx = 0
+    this.dy = 0
   }
 
 updateState(thrust, rotateCounterClockwise, rotateClockwise) {
@@ -26,7 +28,6 @@ updateState(thrust, rotateCounterClockwise, rotateClockwise) {
 }
 
 update (SCREEN_WIDTH, SCREEN_HEIGHT){
-  //shipAngle = shipRotation * 15.0 * 0.01745;
   // calculate x,y components of speed, thrust and friction
   let currentSpeedX = this.shipSpeed * Math.sin(this.directionAngle)
   let currentSpeedY = this.shipSpeed * Math.cos(this.directionAngle)
@@ -72,6 +73,8 @@ update (SCREEN_WIDTH, SCREEN_HEIGHT){
 
   this.x += dx //(shipSpeed*sin(shipAngle))
   this.y -= dy //(shipSpeed*cos(shipAngle))
+  this.dx = dx
+  this.dy = dy
 
   //amend x,y values to keep ship on screen
   if (this.x < 0) {

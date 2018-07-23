@@ -2,7 +2,8 @@
 import Rock from './modules/rock.js';
 import Ship from './modules/ship.js';
 import Bullet from './modules/bullet.js';
-import {asteroidSVG, shipSVG, bulletSVG} from './graphics.js';
+import GameScreen from './modules/gamescreen.js';
+import {createRock, removeRockNode, createShipNode, createBulletNode, removeBulletNode} from './render_html.js'
 import {doCirclesCollide} from './helper.js';
 
 var globalID
@@ -14,9 +15,11 @@ var ACTIONS = {
   shipRight: false
 }
 
-let screen = {width: 800, height: 400};
-
-let rocks = [];
+let screen = new GameScreen('gameScreen', 800, 400)
+let rocks = {
+  rockCount: 0,
+  rockList: {}
+}
 let ship;
 let bullets = {
   MIN_RELOD_TIME: 10,
@@ -25,48 +28,33 @@ let bullets = {
   bulletCount: 0
 }
 
-function createRockNode (rocks) {
-  let gameHTML = '';
-  for (let i=0; i<rocks.length; i++){
-    gameHTML += asteroidSVG(rocks[i])
-  }
-  gameHTML += shipSVG()
-  var gameScreen = document.getElementById("gameScreen"); 
-  gameScreen.innerHTML = gameHTML;
-}
-
 function initRocks(count) {
   for (let i = 0; i < count; i++){
     let x = Math.random() * screen.width;
     let y = Math.random() * screen.height;
     let speed = 1 + Math.random() * 2;
     let r = 20 + Math.random() * 30
-    rocks[i] = new Rock(x,y,r,speed, `rock${i}`);
+    rocks.rockList[`rock${i}`] = new Rock(x, y, r, speed, `rock${i}`);
+  }
+  console.log(rocks)
+}
+
+const createRockNode = (rocks) => {
+  for (var rock in rocks.rockList) {
+    console.log(rock)
+    console.log(rocks.rockList[rock])
+    createRock(rocks.rockList[rock])
   }
 }
 
 function initShip() {
- ship = new Ship(screen.width/2, screen.height/2, "ship")
+ ship = new Ship(screen.width / 2, screen.height / 2, "ship")
 }
 
 function resizeGameScreenSize() {
-  let gameScreen = document.getElementById("gameScreen")
+  let gameScreen = document.getElementById(screen.id)
   screen.width = gameScreen.offsetWidth;
   screen.height = gameScreen.offsetHeight;
-}
-
-function createBulletNode (newBullet) {
-  let gameScreen = document.getElementById("gameScreen");
-  //let bulletHTML = bulletSVG(newBullet)
-  let bulletNode = document.createElement('div');
-  bulletNode.setAttribute("id", newBullet.id);
-  bulletNode.setAttribute("class", "bullet");
-  gameScreen.appendChild(bulletNode);
-}
-
-function removeBulletNode (newBullet) {
-  let bulletNode = document.getElementById(newBullet.id);
-  bulletNode.parentNode.removeChild(bulletNode);
 }
 
 function step(timestamp) {
@@ -88,7 +76,7 @@ function gameLoop() {
       // create new bullet
       bullets.bulletCount++
       let bulletId = 'bullet'+ bullets.bulletCount
-      bullets.bulletList[bulletId] = new Bullet(bulletId, ship.x, ship.y, ship.shipRotation, 0, 0, 12)
+      bullets.bulletList[bulletId] = new Bullet(bulletId, ship.x, ship.y, ship.shipRotation, ship.dx, ship.dy, 6)
       createBulletNode(bullets.bulletList[bulletId])
       // reset time to fire next bullet
       bullets.countdownToReload = bullets.MIN_RELOD_TIME
@@ -105,10 +93,12 @@ function gameLoop() {
     }
   }
 
-  for (let i=0; i<rocks.length; i++) {
-    rocks[i].update(screen.width, screen.height);
-    if (doCirclesCollide(rocks[i], ship)) {
-      rocks[i].remove()
+  for (var rock in rocks.rockList) {
+    rocks.rockList[rock].update(screen.width, screen.height);
+    if (doCirclesCollide(rocks.rockList[rock], ship)) {
+      //rocks[i].remove()
+      removeRockNode(rocks.rockList[rock])
+      delete rocks.rockList[rock]
     }
   }
 
@@ -116,17 +106,16 @@ function gameLoop() {
   globalID = window.requestAnimationFrame(step);
 }
 
+// render ship, rocks, bullet
 function renderScreen() {
-  var gameScreen = document.getElementById("gameScreen"); 
   ship.render()
-  for (let i = 0; i < rocks.length; i++) {
-    rocks[i].render();
+  for (var rock in rocks.rockList) {
+    rocks.rockList[rock].render()
   }
   for (var bullet in bullets.bulletList) {
     bullets.bulletList[bullet].update(screen.width, screen.height);
     bullets.bulletList[bullet].render()
   }
-
 }
 
 function keyEvent(ev, isKeyDown){
@@ -144,9 +133,12 @@ function startGame() {
   addEvents()
 }
 
+
+
 function startLevel(level) {
   initRocks(30)
   createRockNode(rocks)
+  createShipNode()
 }
 
 function addEvents() {

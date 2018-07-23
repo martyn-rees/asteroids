@@ -1,7 +1,8 @@
 export const asteroidSVG = (rock) => `
-  <svg height="${2 * rock.r}" width="${2 * rock.r}" id="${rock.id}" class="rock" style="margin-left:-${rock.r}px;margin-top:-${rock.r}px" viewbox="-${rock.r} -${rock.r} ${2 * rock.r} ${2 * rock.r}">
+  <svg height="${2 * rock.r}" width="${2 * rock.r}" style="margin-left:-${rock.r}px;margin-top:-${rock.r}px" viewbox="-${rock.r} -${rock.r} ${2 * rock.r} ${2 * rock.r}">
     <circle cx="0" cy="0" r="${rock.r-1}" stroke="black" stroke-width="1" fill="black" />
-  </svg>`
+   	<circle cx="0" cy="15" r="4" stroke="blue" stroke-width="1" fill="blue" />
+ </svg>`
 
 export const shipSVG = () => `
 <svg id="ship" class="ship" width="12px" height="12px" viewBox="0 0 12 12" version="1.1">
