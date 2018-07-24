@@ -10,6 +10,9 @@ export const createRock = (rock) => {
   let rockContainer = document.createElement('div');
   rockContainer.setAttribute("id", rock.id);
   rockContainer.setAttribute("class", "rock");
+  let rockStyle = `height:${2 * rock.r}px; width:${2 * rock.r}px; margin-left:-${rock.r}px; margin-top:-${rock.r}px;`
+
+  rockContainer.setAttribute("style", rockStyle);
   rockContainer.innerHTML = asteroidSVG(rock);
   addToGameWindow(rockContainer);
 }

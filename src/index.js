@@ -36,13 +36,10 @@ function initRocks(count) {
     let r = 20 + Math.random() * 30
     rocks.rockList[`rock${i}`] = new Rock(x, y, r, speed, `rock${i}`);
   }
-  console.log(rocks)
 }
 
-const createRockNode = (rocks) => {
+const initRenderRocks = (rocks) => {
   for (var rock in rocks.rockList) {
-    console.log(rock)
-    console.log(rocks.rockList[rock])
     createRock(rocks.rockList[rock])
   }
 }
@@ -102,6 +99,22 @@ function gameLoop() {
     }
   }
 
+  // test rocks to bullets
+  for (var rock in rocks.rockList) {
+    let haveCollision = false
+    for (var bullet in bullets.bulletList) {
+      if (!haveCollision) {
+        if (doCirclesCollide(rocks.rockList[rock], bullets.bulletList[bullet])) {
+          removeRockNode(rocks.rockList[rock])
+          delete rocks.rockList[rock]
+          removeBulletNode(bullets.bulletList[bullet])
+          delete bullets.bulletList[bullet]
+          haveCollision = true
+        }
+      }
+    }
+  }
+
   renderScreen()
   globalID = window.requestAnimationFrame(step);
 }
@@ -133,11 +146,9 @@ function startGame() {
   addEvents()
 }
 
-
-
 function startLevel(level) {
   initRocks(30)
-  createRockNode(rocks)
+  initRenderRocks(rocks)
   createShipNode()
 }
 

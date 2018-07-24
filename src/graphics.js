@@ -1,5 +1,5 @@
 export const asteroidSVG = (rock) => `
-  <svg height="${2 * rock.r}" width="${2 * rock.r}" style="margin-left:-${rock.r}px;margin-top:-${rock.r}px" viewbox="-${rock.r} -${rock.r} ${2 * rock.r} ${2 * rock.r}">
+  <svg height="${2 * rock.r}" width="${2 * rock.r}" viewbox="-${rock.r} -${rock.r} ${2 * rock.r} ${2 * rock.r}">
     <circle cx="0" cy="0" r="${rock.r-1}" stroke="black" stroke-width="1" fill="black" />
    	<circle cx="0" cy="15" r="4" stroke="blue" stroke-width="1" fill="blue" />
  </svg>`
