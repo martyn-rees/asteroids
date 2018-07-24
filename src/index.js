@@ -17,7 +17,13 @@ var ACTIONS = {
 
 let screen = new GameScreen('gameScreen', 800, 400)
 let rocks = {
+  type: {
+    LARGE: {minRadius: 25, maxRadius: 30, minSpeed: 1, maxSpeed: 2},
+    MEDIUM: {minRadius: 15, maxRadius: 20, minSpeed: 1.5, maxSpeed: 2.5},
+    SMALL: {minRadius: 8, maxRadius: 10, minSpeed: 2, maxSpeed: 3}
+  },
   rockCount: 0,
+  totalCreated: 0,
   rockList: {}
 }
 let ship;
@@ -29,13 +35,23 @@ let bullets = {
 }
 
 function initRocks(count) {
+  let size = 'LARGE'
+  let rockProps = rocks.type[size]
   for (let i = 0; i < count; i++){
-    let x = Math.random() * screen.width;
-    let y = Math.random() * screen.height;
-    let speed = 1 + Math.random() * 2;
-    let r = 20 + Math.random() * 30
-    rocks.rockList[`rock${i}`] = new Rock(x, y, r, speed, `rock${i}`);
+    initRock(size)
   }
+}
+
+function initRock(size, initialX, initialY) {
+  let rockProps = rocks.type[size]
+  let id = 'rocks' + rocks.totalCreated++
+  console.log('id', id)
+  let x = initialX || Math.random() * screen.width
+  let y = initialY || Math.random() * screen.height
+  let speed = rockProps.minSpeed + Math.random() * rockProps.maxSpeed
+  let r = rockProps.minRadius + Math.random() * rockProps.maxRadius
+  rocks.rockList[id] = new Rock(x, y, r, speed, id, size)
+  createRock(rocks.rockList[id])
 }
 
 const initRenderRocks = (rocks) => {
@@ -94,17 +110,30 @@ function gameLoop() {
     rocks.rockList[rock].update(screen.width, screen.height);
     if (doCirclesCollide(rocks.rockList[rock], ship)) {
       //rocks[i].remove()
+
       removeRockNode(rocks.rockList[rock])
       delete rocks.rockList[rock]
     }
   }
 
+  let destroyedRockSizes = []
   // test rocks to bullets
   for (var rock in rocks.rockList) {
     let haveCollision = false
     for (var bullet in bullets.bulletList) {
       if (!haveCollision) {
         if (doCirclesCollide(rocks.rockList[rock], bullets.bulletList[bullet])) {
+          if (rocks.rockList[rock].size == 'LARGE') {
+            initRock('MEDIUM', rocks.rockList[rock].x, rocks.rockList[rock].y)
+            initRock('MEDIUM', rocks.rockList[rock].x, rocks.rockList[rock].y)
+          } else if (rocks.rockList[rock].size == 'MEDIUM') {
+            initRock('SMALL', rocks.rockList[rock].x, rocks.rockList[rock].y)
+            initRock('SMALL', rocks.rockList[rock].x, rocks.rockList[rock].y)
+            initRock('SMALL', rocks.rockList[rock].x, rocks.rockList[rock].y)
+          }
+          //console.log('boom', rocks.rockList[rock].id, rocks.rockList[rock].size)
+          destroyedRockSizes.push(rocks.rockList[rock].size)
+          console.log(destroyedRockSizes)
           removeRockNode(rocks.rockList[rock])
           delete rocks.rockList[rock]
           removeBulletNode(bullets.bulletList[bullet])
@@ -115,7 +144,18 @@ function gameLoop() {
     }
   }
 
+
   renderScreen()
+
+  /*if (destroyedRockSizes.length > 0) {
+    console.log('destroyedRockSizes', destroyedRockSizes)
+    // createNewRocks
+    for (const size of destroyedRockSizes) {
+      console.log('blow ' + size)
+      if (size == 'LARGE') {initRock('MEDIUM')}
+      if (size == 'MEDIUM') {initRock('SMALL')}
+    }
+  }*/
   globalID = window.requestAnimationFrame(step);
 }
 
@@ -147,8 +187,8 @@ function startGame() {
 }
 
 function startLevel(level) {
-  initRocks(30)
-  initRenderRocks(rocks)
+  initRocks(4)
+  //initRenderRocks(rocks)
   createShipNode()
 }
 
